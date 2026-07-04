@@ -1,18 +1,7 @@
-# Virtual Environment
 venv/
-
-# Python
-__pycache__/
-*.pyc
-
-# Environment Variables
 .env
-
-# macOS
-.DS_Store
-
-# Logs
-*.log
-
-# Vector Database
+__pycache__/
 db/
+*.pyc
+.DS_Store
+error.log
