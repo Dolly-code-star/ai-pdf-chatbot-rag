@@ -8,46 +8,47 @@ from utils.vector_store import (
 from chatbot import ask_llm
 
 
+print("=" * 50)
+print("🤖 AI PDF Chatbot Started")
+print("=" * 50)
+
 # Step 1: Load PDF
 text = load_pdf("data/machine_learning.pdf")
 
-# Step 2: Split into chunks
+# Step 2: Split text
 chunks = split_text(text)
 
 # Step 3: Generate embeddings
 embeddings = generate_embeddings(chunks)
 
-# Step 4: Store embeddings in ChromaDB
+# Step 4: Store embeddings
 store_embeddings(chunks, embeddings)
 
-# Step 5: User question
-query = "What is Machine Learning?"
+print("\n✅ PDF processed successfully!")
+print("You can now ask questions.")
+print("Type 'exit' to quit.\n")
 
-# Step 6: Convert question to embedding
-query_embedding = generate_embeddings([query])[0]
 
-# Step 7: Search ChromaDB
-results = search_documents(query_embedding)
+while True:
 
-# Step 8: Retrieve most relevant chunk
-context = results["documents"][0][0]
+    query = input("You: ")
 
-print("\n==============================")
-print("Retrieved Context")
-print("==============================")
-print(context)
+    if query.lower() == "exit":
+        print("\n👋 Goodbye!")
+        break
 
-# Step 9: Ask Gemini
-answer = ask_llm(context, query)
+    # Generate embedding for the question
+    query_embedding = generate_embeddings([query])[0]
 
-print("\n==============================")
-print("Gemini Answer")
-print("==============================")
-print(answer)
+    # Search database
+    results = search_documents(query_embedding)
 
-print("\n==============================")
-print("Project Information")
-print("==============================")
-print(f"Total Chunks: {len(chunks)}")
-print(f"Total Embeddings: {len(embeddings)}")
-print(f"Embedding Dimension: {len(embeddings[0])}")
+    # Retrieve relevant context
+    context = results["documents"][0][0]
+
+    # Ask Gemini
+    answer = ask_llm(context, query)
+
+    print("\n🤖 Bot:")
+    print(answer)
+    print("\n" + "-" * 50)
