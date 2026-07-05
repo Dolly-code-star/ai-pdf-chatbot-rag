@@ -25,3 +25,10 @@ def search_documents(query_embedding, n_results=2):
     )
 
     return results
+
+
+def database_exists():
+    """
+    Returns True if embeddings already exist.
+    """
+    return collection.count() > 0
