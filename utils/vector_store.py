@@ -7,15 +7,22 @@ collection = client.get_or_create_collection(
 )
 
 
-def store_embeddings(chunks, embeddings):
-    for i, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+def store_embeddings(chunks, embeddings, source):
+    for i, (chunk, embedding) in enumerate(
+        zip(chunks, embeddings)
+    ):
         collection.add(
-            ids=[str(i)],
+            ids=[f"{source}_{i}"],
             documents=[chunk],
-            embeddings=[embedding.tolist()]
+            embeddings=[embedding.tolist()],
+            metadatas=[
+                {
+                    "source": source
+                }
+            ]
         )
 
-    print("✅ Embeddings stored successfully!")
+    print(f"✅ Stored embeddings for {source}")
 
 
 def search_documents(query_embedding, n_results=2):

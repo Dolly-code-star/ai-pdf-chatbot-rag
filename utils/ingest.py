@@ -1,3 +1,5 @@
+import os
+
 from utils.pdf_reader import load_pdf
 from utils.text_splitter import split_text
 from utils.embeddings import generate_embeddings
@@ -7,29 +9,37 @@ from utils.vector_store import (
 )
 
 
-def ingest_pdf(pdf_path):
+def ingest_pdfs(folder_path):
     """
-    Process the PDF only if the vector database is empty.
+    Process all PDFs in the folder and store embeddings.
     """
 
     if database_exists():
         print("✅ Existing vector database found. Skipping ingestion.\n")
         return
 
-    print("📄 Loading PDF...")
+    pdf_files = [
+        file for file in os.listdir(folder_path)
+        if file.endswith(".pdf")
+    ]
 
-    text = load_pdf(pdf_path)
+    if not pdf_files:
+        print("❌ No PDF files found.")
+        return
 
-    print("✂️ Splitting text...")
+    for pdf_file in pdf_files:
+        print(f"\n📄 Processing: {pdf_file}")
 
-    chunks = split_text(text)
+        pdf_path = os.path.join(folder_path, pdf_file)
 
-    print("🧠 Generating embeddings...")
+        text = load_pdf(pdf_path)
+        chunks = split_text(text)
+        embeddings = generate_embeddings(chunks)
 
-    embeddings = generate_embeddings(chunks)
+        store_embeddings(
+            chunks,
+            embeddings,
+            pdf_file
+     )
 
-    print("💾 Storing embeddings...")
-
-    store_embeddings(chunks, embeddings)
-
-    print("✅ PDF ingestion completed.\n")
+        print(f"✅ Finished: {pdf_file}")
